@@ -1,5 +1,6 @@
 {
-  "name": "with-redux-toolkit",
+  "name": "next-redux-reddit-example",
+  "author": "Martin Quintana <quintanamartine@gmail.com",
   "version": "1.0.0",
   "scripts": {
     "dev": "next",
