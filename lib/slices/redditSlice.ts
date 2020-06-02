@@ -1,5 +1,10 @@
 import ky from 'ky/umd'
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import {
+  createSlice,
+  createAsyncThunk,
+  createSelector,
+  PayloadAction,
+} from '@reduxjs/toolkit'
 import { persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 
@@ -13,11 +18,11 @@ type RedditState = {
   error: Nullable<string>
   after: string
   readPostIds: Record<string, boolean>
+  clearedPostIds: Record<string, boolean>
 }
 type StateType = {
   reddit: RedditState
 }
-
 type ParamsType = {
   after: string
 }
@@ -44,6 +49,7 @@ export const fetchPosts = createAsyncThunk<
 const initialState: RedditState = {
   posts: [],
   readPostIds: {},
+  clearedPostIds: {},
   currentPost: null,
   error: null,
   after: '',
@@ -54,10 +60,13 @@ const redditSlice = createSlice({
   name: 'reddit',
   initialState,
   reducers: {
-    setCurrentPost: (state, action) => {
+    setCurrentPost: (state, action: PayloadAction<Post>) => {
       state.currentPost = action.payload
       // Set post as read
       state.readPostIds[action.payload.id] = true
+    },
+    clearPost: (state, action: PayloadAction<string>) => {
+      state.clearedPostIds[action.payload] = true
     },
   },
   extraReducers: {
@@ -79,26 +88,32 @@ const redditSlice = createSlice({
       }
     },
     [fetchPosts.rejected.toString()]: (state, { payload }) => {
+      debugger
       state.loading = 'error'
       state.error = payload.error
     },
   },
 })
 
-export const selectPosts = (state: StateType): Post[] => state.reddit.posts
-export const selectReadPostIds = (state: StateType): Record<string, boolean> =>
-  state.reddit.readPostIds
+export const selectPosts = createSelector(
+  (state: StateType) => ({
+    posts: state.reddit.posts,
+    readPostIds: state.reddit.readPostIds,
+    clearedPostIds: state.reddit.clearedPostIds,
+  }),
+  (state) => state
+)
 export const selectAfter = (state: StateType): string => state.reddit.after
 export const selectLoading = (state: StateType): string => state.reddit.loading
 export const selectCurrentPost = (state: StateType): Nullable<Post> =>
   state.reddit.currentPost
 
-export const { setCurrentPost } = redditSlice.actions
+export const { setCurrentPost, clearPost } = redditSlice.actions
 
 const persistConfig = {
   key: 'reddit',
   storage,
-  whitelist: ['readPostIds'],
+  whitelist: ['readPostIds', 'clearedPostIds'],
 }
 const persistedReducer = persistReducer(persistConfig, redditSlice.reducer)
 

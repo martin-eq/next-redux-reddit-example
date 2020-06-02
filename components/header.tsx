@@ -37,7 +37,6 @@ const Header: FunctionComponent = () => {
       <Toolbar>
         <IconButton
           color="inherit"
-          aria-label="open drawer"
           edge="start"
           onClick={() => dispatch(toggleDrawer())}
           className={classes.menuButton}
