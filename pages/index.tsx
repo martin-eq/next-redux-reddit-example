@@ -1,10 +1,12 @@
-import { FunctionComponent } from 'react'
-import Head from 'next/head'
+import { FunctionComponent, useEffect } from 'react'
+import { useDispatch } from 'react-redux'
 import { makeStyles, createStyles } from '@material-ui/core/styles'
+import Head from 'next/head'
 
 import Header from '../components/header'
 import Sidebar from '../components/sidebar'
 import PostDetail from '../components/postDetail'
+import { fetchPosts } from '../lib/slices/redditSlice'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -16,6 +18,14 @@ const useStyles = makeStyles(() =>
 
 const IndexPage: FunctionComponent = () => {
   const classes = useStyles()
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    async function dispatchLoadPosts() {
+      await dispatch(fetchPosts())
+    }
+    dispatchLoadPosts()
+  }, [dispatch])
 
   return (
     <div className={classes.root}>

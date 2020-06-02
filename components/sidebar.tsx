@@ -17,11 +17,7 @@ import {
 import { DRAWER_WIDTH } from '../lib/constants'
 import PostList from './postList'
 import { toggleDrawer, selectMobileOpen } from '../lib/slices/drawerSlice'
-import {
-  fetchPosts,
-  selectAfter,
-  selectLoading,
-} from '../lib/slices/redditSlice'
+import { fetchPosts, selectAfter } from '../lib/slices/redditSlice'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -35,7 +31,7 @@ const useStyles = makeStyles((theme: Theme) =>
       width: DRAWER_WIDTH,
     },
     loader: {
-      padding: theme.spacing(1),
+      padding: theme.spacing(2),
       textAlign: 'center',
     },
   })
@@ -47,14 +43,14 @@ const Sidebar: FunctionComponent = () => {
   const dispatch = useDispatch()
   const mobileOpen = useSelector(selectMobileOpen)
   const after = useSelector(selectAfter)
-  const isLoading = useSelector(selectLoading) === 'loading'
 
   const drawer = (
     <InfiniteScroll
       loadMore={() => dispatch(fetchPosts({ after }))}
       // Avoids double initial requests
       // Reference: https://github.com/danbovey/react-infinite-scroller/issues/143#issuecomment-387029723
-      hasMore={!isLoading}
+      hasMore={true}
+      initialLoad={false}
       loader={
         <div className={classes.loader} key={0}>
           <CircularProgress />

@@ -1,5 +1,5 @@
 import { FunctionComponent } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import AppBar from '@material-ui/core/AppBar'
 import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
@@ -9,7 +9,6 @@ import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 
 import { DRAWER_WIDTH } from '../lib/constants'
 import { toggleDrawer } from '../lib/slices/drawerSlice'
-import { selectCurrentPost } from '../lib/slices/redditSlice'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
