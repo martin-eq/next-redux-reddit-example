@@ -7,7 +7,7 @@ import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 
-import { DRAWER_WIDTH } from '../constants'
+import { DRAWER_WIDTH } from '../lib/constants'
 import { toggleDrawer } from '../lib/slices/drawerSlice'
 import { selectCurrentPost } from '../lib/slices/redditSlice'
 

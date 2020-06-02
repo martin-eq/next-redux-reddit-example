@@ -10,11 +10,18 @@ import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
 
 import { selectPosts, setCurrentPost } from '../lib/slices/redditSlice'
-import { API_URL } from '../constants'
+import { API_URL } from '../lib/constants'
+import { setDrawer } from '../lib/slices/drawerSlice'
 
 const PostList: FunctionComponent = () => {
   const dispatch = useDispatch()
   const posts = useSelector(selectPosts)
+
+  const handleSelectPost = (post) => {
+    dispatch(setCurrentPost(post))
+    // Close drawer after selecting a post in mobile
+    dispatch(setDrawer(false))
+  }
 
   return (
     <List disablePadding>
@@ -23,7 +30,7 @@ const PostList: FunctionComponent = () => {
           <ListItem
             button
             alignItems="flex-start"
-            onClick={() => dispatch(setCurrentPost(post))}
+            onClick={() => handleSelectPost(post)}
           >
             <ListItemAvatar>
               <Avatar alt={post.title} src={post.thumbnail} />

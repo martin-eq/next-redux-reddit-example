@@ -15,8 +15,8 @@ import {
 } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 
-import redditReducer from './lib/slices/redditSlice'
-import drawerReducer from './lib/slices/drawerSlice'
+import redditReducer from './slices/redditSlice'
+import drawerReducer from './slices/drawerSlice'
 
 const rootReducer = combineReducers({
   reddit: redditReducer,

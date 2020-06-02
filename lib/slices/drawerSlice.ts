@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 type StateType = {
   drawer: {
@@ -19,6 +19,9 @@ const counterSlice = createSlice({
     toggleDrawer: (state) => {
       state.mobileOpen = !state.mobileOpen
     },
+    setDrawer: (state, action: PayloadAction<boolean>) => {
+      state.mobileOpen = action.payload
+    },
   },
 })
 
@@ -31,6 +34,6 @@ const counterSlice = createSlice({
 export const selectMobileOpen = (state: StateType): boolean =>
   state.drawer.mobileOpen
 
-export const { toggleDrawer } = counterSlice.actions
+export const { toggleDrawer, setDrawer } = counterSlice.actions
 
 export default counterSlice.reducer

@@ -12,7 +12,7 @@ import LinkIcon from '@material-ui/icons/Link'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 
 import { selectCurrentPost } from '../lib/slices/redditSlice'
-import { PLACEHOLDER_IMAGE } from '../constants'
+import { PLACEHOLDER_IMAGE } from '../lib/constants'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -22,7 +22,9 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: theme.spacing(3),
     },
     card: {
-      maxWidth: '70%',
+      [theme.breakpoints.up('md')]: {
+        maxWidth: '70%',
+      },
       margin: 'auto',
     },
   })

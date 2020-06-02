@@ -1,7 +1,7 @@
 import ky from 'ky/umd'
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
-import { PAGE_LIMIT, API_URL } from '../../constants'
+import { PAGE_LIMIT, API_URL } from '../constants'
 import Post from '../../types/post'
 
 type RedditState = {
@@ -60,6 +60,11 @@ const redditSlice = createSlice({
       state.posts = payload.data.children.map((child) => child.data)
       state.after = payload.data.after
       state.loading = 'loaded'
+
+      if (!state.currentPost) {
+        // Display the first post after loading the app for the first time
+        state.currentPost = state.posts[0]
+      }
     },
     [fetchPosts.rejected.toString()]: (state, { payload }) => {
       state.loading = 'error'

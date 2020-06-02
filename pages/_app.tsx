@@ -3,7 +3,7 @@ import { FunctionComponent, ComponentType } from 'react'
 import { PersistGate } from 'redux-persist/integration/react'
 import CssBaseline from '@material-ui/core/CssBaseline'
 
-import { store, persistor } from '../store'
+import { store, persistor } from '../lib/store'
 
 type MyAppProps = {
   Component: ComponentType

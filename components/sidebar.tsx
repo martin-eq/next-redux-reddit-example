@@ -9,7 +9,7 @@ import {
   createStyles,
 } from '@material-ui/core/styles'
 
-import { DRAWER_WIDTH } from '../constants'
+import { DRAWER_WIDTH } from '../lib/constants'
 import DrawerContents from './drawerContents'
 import { toggleDrawer, selectMobileOpen } from '../lib/slices/drawerSlice'
 
