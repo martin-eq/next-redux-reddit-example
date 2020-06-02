@@ -1,5 +1,7 @@
 import ky from 'ky/umd'
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { persistReducer } from 'redux-persist'
+import storage from 'redux-persist/lib/storage'
 
 import { PAGE_LIMIT, API_URL } from '../constants'
 import Post from '../../types/post'
@@ -9,7 +11,7 @@ type RedditState = {
   currentPost?: Post
   loading: string
   error?: string
-  after?: string
+  after: string
 }
 type StateType = {
   reddit: RedditState
@@ -38,14 +40,15 @@ export const fetchPosts = createAsyncThunk<
   }
 })
 
-const initialState: RedditState = {
-  posts: [],
-  loading: 'idle',
-}
-
 const redditSlice = createSlice({
   name: 'reddit',
-  initialState,
+  initialState: {
+    posts: [],
+    currentPost: null,
+    error: null,
+    after: '',
+    loading: 'idle',
+  },
   reducers: {
     setCurrentPost: (state, action) => {
       state.currentPost = action.payload
@@ -53,11 +56,12 @@ const redditSlice = createSlice({
   },
   extraReducers: {
     [fetchPosts.pending.toString()]: (state) => {
-      state.posts = []
       state.loading = 'loading'
     },
     [fetchPosts.fulfilled.toString()]: (state, { payload }) => {
-      state.posts = payload.data.children.map((child) => child.data)
+      state.posts = state.posts.concat(
+        payload.data.children.map((child) => child.data)
+      )
       state.after = payload.data.after
       state.loading = 'loaded'
 
@@ -74,9 +78,18 @@ const redditSlice = createSlice({
 })
 
 export const selectPosts = (state: StateType): Post[] => state.reddit.posts
+export const selectAfter = (state: StateType): string => state.reddit.after
+export const selectLoading = (state: StateType): string => state.reddit.loading
 export const selectCurrentPost = (state: StateType): Nullable<Post> =>
   state.reddit.currentPost
 
 export const { setCurrentPost } = redditSlice.actions
 
-export default redditSlice.reducer
+const persistConfig = {
+  key: 'reddit',
+  storage,
+  blacklist: ['posts', 'after', 'loading'],
+}
+const persistedReducer = persistReducer(persistConfig, redditSlice.reducer)
+
+export default persistedReducer

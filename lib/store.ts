@@ -1,11 +1,6 @@
-import {
-  configureStore,
-  combineReducers,
-  getDefaultMiddleware,
-} from '@reduxjs/toolkit'
+import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit'
 import {
   persistStore,
-  persistReducer,
   FLUSH,
   REHYDRATE,
   PAUSE,
@@ -13,24 +8,15 @@ import {
   PURGE,
   REGISTER,
 } from 'redux-persist'
-import storage from 'redux-persist/lib/storage'
 
 import redditReducer from './slices/redditSlice'
 import drawerReducer from './slices/drawerSlice'
 
-const rootReducer = combineReducers({
-  reddit: redditReducer,
-  drawer: drawerReducer,
-})
-
-const persistConfig = {
-  key: 'next-redux-reddit-example',
-  storage,
-}
-const persistedReducer = persistReducer(persistConfig, rootReducer)
-
 export const store = configureStore({
-  reducer: persistedReducer,
+  reducer: {
+    reddit: redditReducer,
+    drawer: drawerReducer,
+  },
   devTools: true,
   middleware: getDefaultMiddleware({
     // Disable serializable check from default middleware to avoid

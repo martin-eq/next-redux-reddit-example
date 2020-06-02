@@ -26,7 +26,7 @@ const PostList: FunctionComponent = () => {
   return (
     <List disablePadding>
       {posts.map((post) => (
-        <Fragment key={post.name}>
+        <Fragment key={post.id}>
           <ListItem
             button
             alignItems="flex-start"

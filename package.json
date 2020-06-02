@@ -19,6 +19,7 @@
     "next": "latest",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-infinite-scroller": "^1.2.4",
     "react-redux": "^7.2.0",
     "redux-persist": "^6.0.0"
   },
