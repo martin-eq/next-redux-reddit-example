@@ -16,6 +16,16 @@ import { setDrawer } from '../lib/slices/drawerSlice'
 const PostList: FunctionComponent = () => {
   const dispatch = useDispatch()
   const posts = useSelector(selectPosts)
+  const verifyUrl = (url: string): string | undefined => {
+    try {
+      new URL(url)
+      // If no exception was thrown, URL is valid
+      return url
+    } catch (e) {
+      // URL is invalid if we cannot create an URL object
+      return undefined
+    }
+  }
 
   const handleSelectPost = (post) => {
     dispatch(setCurrentPost(post))
@@ -33,7 +43,7 @@ const PostList: FunctionComponent = () => {
             onClick={() => handleSelectPost(post)}
           >
             <ListItemAvatar>
-              <Avatar alt={post.title} src={post.thumbnail} />
+              <Avatar alt={post.title} src={verifyUrl(post.thumbnail)} />
             </ListItemAvatar>
             <ListItemText
               disableTypography

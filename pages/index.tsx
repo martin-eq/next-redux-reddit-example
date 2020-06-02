@@ -1,6 +1,5 @@
 import { FunctionComponent } from 'react'
 import Head from 'next/head'
-import CssBaseline from '@material-ui/core/CssBaseline'
 import { makeStyles, createStyles } from '@material-ui/core/styles'
 
 import Header from '../components/header'
@@ -31,7 +30,6 @@ const IndexPage: FunctionComponent = () => {
           href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
         />
       </Head>
-      <CssBaseline />
       <Header />
       <Sidebar />
       <PostDetail />
