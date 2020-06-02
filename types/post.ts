@@ -6,7 +6,14 @@ type Post = {
   name: string
   thumbnail: string
   url: string
-  post_hint: 'image' | 'hosted:video'
+  is_video: boolean
+  num_comments: number
+  is_reddit_media_domain: boolean
+  secure_media: {
+    reddit_video: {
+      fallback_url: string
+    }
+  }
 }
 
 export default Post

@@ -1,12 +1,18 @@
 import { FunctionComponent } from 'react'
+import moment from 'moment'
+import { useSelector } from 'react-redux'
 import Card from '@material-ui/core/Card'
-import CardActionArea from '@material-ui/core/CardActionArea'
-import CardActions from '@material-ui/core/CardActions'
-import CardContent from '@material-ui/core/CardContent'
+import CardHeader from '@material-ui/core/CardHeader'
 import CardMedia from '@material-ui/core/CardMedia'
-import Button from '@material-ui/core/Button'
+import CardContent from '@material-ui/core/CardContent'
+import CardActions from '@material-ui/core/CardActions'
 import Typography from '@material-ui/core/Typography'
+import IconButton from '@material-ui/core/IconButton'
+import LinkIcon from '@material-ui/icons/Link'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
+
+import { selectCurrentPost } from '../lib/slices/redditSlice'
+import { PLACEHOLDER_IMAGE } from '../constants'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -15,41 +21,53 @@ const useStyles = makeStyles((theme: Theme) =>
       flexGrow: 1,
       padding: theme.spacing(3),
     },
+    card: {
+      maxWidth: '70%',
+      margin: 'auto',
+    },
   })
 )
 
-const Post: FunctionComponent = () => {
+const PostDetail: FunctionComponent = () => {
   const classes = useStyles()
-  const post = null
+  const post = useSelector(selectCurrentPost)
 
   if (!post) return null
 
   return (
     <main className={classes.content}>
       <div className={classes.toolbar} />
-      <Card>
-        <CardActionArea>
-          <CardMedia image={post.url} title={post.title} />
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="h2">
-              {post.title}
-            </Typography>
-            <Typography variant="body2" color="textSecondary" component="p">
-              Posted by u/{post.author} {post.created}
-            </Typography>
-          </CardContent>
-        </CardActionArea>
-        <CardActions>
-          <Button size="small" color="primary">
-            Share
-          </Button>
-          <Button size="small" color="primary">
-            Learn More
-          </Button>
+      <Card className={classes.card}>
+        <CardHeader
+          title={post.title}
+          subheader={moment.unix(post.created).fromNow()}
+        />
+        <CardMedia
+          src={
+            post.is_video
+              ? post.secure_media.reddit_video.fallback_url
+              : post.is_reddit_media_domain
+              ? post.url
+              : PLACEHOLDER_IMAGE
+          }
+          component={post.is_video ? 'video' : 'img'}
+          title={post.title}
+          controls
+          autoPlay
+        />
+        <CardContent>
+          <Typography variant="body2" color="textSecondary" component="p">
+            Posted by u/{post.author}
+          </Typography>
+        </CardContent>
+        <CardActions disableSpacing>
+          <IconButton onClick={() => window.open(post.url)}>
+            <LinkIcon />
+          </IconButton>
         </CardActions>
       </Card>
     </main>
   )
 }
 
-export default Post
+export default PostDetail

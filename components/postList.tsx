@@ -1,5 +1,5 @@
 import { FunctionComponent, Fragment } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import Divider from '@material-ui/core/Divider'
@@ -7,37 +7,59 @@ import ListItemText from '@material-ui/core/ListItemText'
 import ListItemAvatar from '@material-ui/core/ListItemAvatar'
 import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
+import Link from '@material-ui/core/Link'
 
-import { selectPosts } from '../lib/slices/redditSlice'
+import { selectPosts, setCurrentPost } from '../lib/slices/redditSlice'
+import { API_URL } from '../constants'
 
 const PostList: FunctionComponent = () => {
-  const { posts } = useSelector(selectPosts)
+  const dispatch = useDispatch()
+  const posts = useSelector(selectPosts)
 
   return (
     <List disablePadding>
       {posts.map((post) => (
         <Fragment key={post.name}>
-          <ListItem button alignItems="flex-start">
+          <ListItem
+            button
+            alignItems="flex-start"
+            onClick={() => dispatch(setCurrentPost(post))}
+          >
             <ListItemAvatar>
               <Avatar alt={post.title} src={post.thumbnail} />
             </ListItemAvatar>
             <ListItemText
-              primary={post.title}
+              disableTypography
+              primary={
+                <Typography variant="h5" color="textPrimary">
+                  {post.title}
+                </Typography>
+              }
               secondary={
                 <>
                   <Typography
-                    component="span"
+                    component="div"
                     variant="body2"
                     color="textPrimary"
                   >
-                    {post.author}
+                    <Link
+                      href={`${API_URL}/u/${post.author}`}
+                      onClick={(event: React.SyntheticEvent) =>
+                        // Avoid this click event to propagate to parent handler
+                        event.stopPropagation()
+                      }
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      u/{post.author}
+                    </Link>
                   </Typography>
                   <Typography
-                    component="span"
-                    variant="body2"
+                    component="div"
+                    variant="caption"
                     color="textPrimary"
                   >
-                    Dismiss Post - 200 comments
+                    Dismiss Post - {post.num_comments} comments
                   </Typography>
                 </>
               }

@@ -1,5 +1,5 @@
 import { FunctionComponent } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import AppBar from '@material-ui/core/AppBar'
 import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
@@ -9,6 +9,7 @@ import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 
 import { DRAWER_WIDTH } from '../constants'
 import { toggleDrawer } from '../lib/slices/drawerSlice'
+import { selectCurrentPost } from '../lib/slices/redditSlice'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -30,10 +31,9 @@ const useStyles = makeStyles((theme: Theme) =>
 const Header: FunctionComponent = () => {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const post = {}
 
   return (
-    <AppBar position="fixed" className={classes.appBar}>
+    <AppBar position="absolute" className={classes.appBar}>
       <Toolbar>
         <IconButton
           color="inherit"
@@ -45,7 +45,8 @@ const Header: FunctionComponent = () => {
           <MenuIcon />
         </IconButton>
         <Typography variant="h6" noWrap>
-          {post.title || 'Select a Reddit post to view details'}
+          Example app made with ❤️ using Next.js with Redux by Martin Quintana,
+          enjoy!
         </Typography>
       </Toolbar>
     </AppBar>

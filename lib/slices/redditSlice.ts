@@ -1,11 +1,12 @@
 import ky from 'ky/umd'
-import { createSlice, createSelector, createAsyncThunk } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
 import { PAGE_LIMIT, API_URL } from '../../constants'
 import Post from '../../types/post'
 
 type RedditState = {
   posts: Post[]
+  currentPost?: Post
   loading: string
   error?: string
 }
@@ -36,9 +37,15 @@ const redditSlice = createSlice({
   name: 'reddit',
   initialState: {
     posts: [],
+    currentPost: null,
+    error: null,
     loading: 'idle',
   },
-  reducers: {},
+  reducers: {
+    setCurrentPost: (state, action) => {
+      state.currentPost = action.payload
+    },
+  },
   extraReducers: {
     [fetchPosts.pending]: (state) => {
       state.posts = []
@@ -56,12 +63,10 @@ const redditSlice = createSlice({
   },
 })
 
-export const selectPosts = createSelector(
-  (state: StateType) => ({
-    posts: state.reddit.posts,
-    error: state.reddit.error,
-  }),
-  (state) => state
-)
+export const selectPosts = (state: StateType): Post[] => state.reddit.posts
+export const selectCurrentPost = (state: StateType): Nullable<Post> =>
+  state.reddit.currentPost
+
+export const { setCurrentPost } = redditSlice.actions
 
 export default redditSlice.reducer
