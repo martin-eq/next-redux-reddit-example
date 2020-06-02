@@ -8,10 +8,11 @@ import Post from '../../types/post'
 
 type RedditState = {
   posts: Post[]
-  currentPost?: Post
+  currentPost: Nullable<Post>
   loading: string
-  error?: string
+  error: Nullable<string>
   after: string
+  readPostIds: Record<string, boolean>
 }
 type StateType = {
   reddit: RedditState
@@ -40,18 +41,23 @@ export const fetchPosts = createAsyncThunk<
   }
 })
 
+const initialState: RedditState = {
+  posts: [],
+  readPostIds: {},
+  currentPost: null,
+  error: null,
+  after: '',
+  loading: 'idle',
+}
+
 const redditSlice = createSlice({
   name: 'reddit',
-  initialState: {
-    posts: [],
-    currentPost: null,
-    error: null,
-    after: '',
-    loading: 'idle',
-  },
+  initialState,
   reducers: {
     setCurrentPost: (state, action) => {
       state.currentPost = action.payload
+      // Set post as read
+      state.readPostIds[action.payload.id] = true
     },
   },
   extraReducers: {
@@ -68,6 +74,8 @@ const redditSlice = createSlice({
       if (!state.currentPost) {
         // Display the first post after loading the app for the first time
         state.currentPost = state.posts[0]
+        // Set post as read
+        state.readPostIds[state.currentPost.id] = true
       }
     },
     [fetchPosts.rejected.toString()]: (state, { payload }) => {
@@ -78,6 +86,8 @@ const redditSlice = createSlice({
 })
 
 export const selectPosts = (state: StateType): Post[] => state.reddit.posts
+export const selectReadPostIds = (state: StateType): Record<string, boolean> =>
+  state.reddit.readPostIds
 export const selectAfter = (state: StateType): string => state.reddit.after
 export const selectLoading = (state: StateType): string => state.reddit.loading
 export const selectCurrentPost = (state: StateType): Nullable<Post> =>
@@ -88,7 +98,7 @@ export const { setCurrentPost } = redditSlice.actions
 const persistConfig = {
   key: 'reddit',
   storage,
-  blacklist: ['posts', 'after', 'loading'],
+  whitelist: ['readPostIds'],
 }
 const persistedReducer = persistReducer(persistConfig, redditSlice.reducer)
 

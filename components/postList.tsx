@@ -8,14 +8,20 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar'
 import Avatar from '@material-ui/core/Avatar'
 import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
+import Badge from '@material-ui/core/Badge'
 
-import { selectPosts, setCurrentPost } from '../lib/slices/redditSlice'
+import {
+  selectPosts,
+  setCurrentPost,
+  selectReadPostIds,
+} from '../lib/slices/redditSlice'
 import { API_URL } from '../lib/constants'
 import { setDrawer } from '../lib/slices/drawerSlice'
 
 const PostList: FunctionComponent = () => {
   const dispatch = useDispatch()
   const posts = useSelector(selectPosts)
+  const readPostIds = useSelector(selectReadPostIds)
   const verifyUrl = (url: string): string | undefined => {
     try {
       new URL(url)
@@ -43,7 +49,17 @@ const PostList: FunctionComponent = () => {
             onClick={() => handleSelectPost(post)}
           >
             <ListItemAvatar>
-              <Avatar alt={post.title} src={verifyUrl(post.thumbnail)} />
+              <Badge
+                color="primary"
+                badgeContent=" "
+                invisible={readPostIds[post.id]}
+              >
+                <Avatar
+                  alt={post.title}
+                  src={verifyUrl(post.thumbnail)}
+                  variant="square"
+                />
+              </Badge>
             </ListItemAvatar>
             <ListItemText
               disableTypography
