@@ -36,9 +36,10 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     drawerPaper: {
       width: DRAWER_WIDTH,
+      paddingBottom: 42, // Size of the dismiss all button
     },
     loader: {
-      padding: theme.spacing(2),
+      padding: theme.spacing(1),
       textAlign: 'center',
     },
   })
@@ -72,7 +73,7 @@ const Sidebar: FunctionComponent = () => {
       >
         <PostList />
       </InfiniteScroll>
-      <Box position="sticky" bottom="0" width="100%" zIndex="modal">
+      <Box position="fixed" bottom="0" width={DRAWER_WIDTH} zIndex="modal">
         <Button
           variant="contained"
           color="secondary"

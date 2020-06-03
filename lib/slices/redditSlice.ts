@@ -122,7 +122,7 @@ export const {
 const persistConfig = {
   key: 'reddit',
   storage,
-  whitelist: ['readPostIds', 'hasMore'],
+  whitelist: ['readPostIds', 'dismissedPostIds', 'hasMore'],
 }
 const persistedReducer = persistReducer(persistConfig, redditSlice.reducer)
 
