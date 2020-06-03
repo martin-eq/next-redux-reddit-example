@@ -24,6 +24,7 @@ import {
   fetchPosts,
   dismissAllPosts,
   selectPosts,
+  selectIsLoading,
 } from '../lib/slices/redditSlice'
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -38,10 +39,6 @@ const useStyles = makeStyles((theme: Theme) =>
       width: DRAWER_WIDTH,
       paddingBottom: 42, // Size of the dismiss all button
     },
-    loader: {
-      padding: theme.spacing(1),
-      textAlign: 'center',
-    },
   })
 )
 
@@ -51,6 +48,7 @@ const Sidebar: FunctionComponent = () => {
   const dispatch = useDispatch()
   const { hasMore } = useSelector(selectPosts)
   const mobileOpen = useSelector(selectMobileOpen)
+  const isLoading = useSelector(selectIsLoading)
 
   const drawer = (
     <>
@@ -65,9 +63,9 @@ const Sidebar: FunctionComponent = () => {
         hasMore={hasMore}
         initialLoad={false}
         loader={
-          <div className={classes.loader} key={0}>
+          <Box p={1} textAlign="center" hidden={!isLoading} key={0}>
             <CircularProgress />
-          </div>
+          </Box>
         }
         useWindow={false}
       >

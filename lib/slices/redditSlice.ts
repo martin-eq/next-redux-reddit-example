@@ -30,28 +30,42 @@ export const fetchPosts = createAsyncThunk<
   Promise<string>,
   void,
   { state: StateType }
->('notes/fetchPosts', async (_, thunkAPI) => {
-  try {
-    const { reddit } = thunkAPI.getState()
-    const searchParams: ParamsType = {
-      limit: PAGE_LIMIT.toString(),
-    }
+>(
+  'notes/fetchPosts',
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const { reddit } = getState()
+      const searchParams: ParamsType = {
+        limit: PAGE_LIMIT.toString(),
+      }
 
-    if (reddit.after) {
-      searchParams.after = reddit.after
-    }
+      if (reddit.after) {
+        searchParams.after = reddit.after
+      }
 
-    if (!reddit.hasMore) {
-      return thunkAPI.rejectWithValue({ error: 'No more posts available' })
-    }
+      if (!reddit.hasMore) {
+        return rejectWithValue({ error: 'No more posts available' })
+      }
 
-    const response = await ky.get(`${API_URL}/top.json`, { searchParams })
-    return response.json()
-  } catch (error) {
-    console.error(error)
-    return thunkAPI.rejectWithValue({ error: error.message })
+      const response = await ky.get(`${API_URL}/top.json`, { searchParams })
+      return response.json()
+    } catch (error) {
+      console.error(error)
+      return rejectWithValue({ error: error.message })
+    }
+  },
+  {
+    condition: (_, { getState }) => {
+      const { reddit } = getState()
+
+      if (reddit.loading === 'loading') {
+        return false
+      }
+
+      return true
+    },
   }
-})
+)
 
 const initialState: RedditState = {
   posts: [],
@@ -77,7 +91,7 @@ const redditSlice = createSlice({
       state.dismissedPostIds[action.payload] = true
     },
     dismissAllPosts: (state) => {
-      state.posts = []
+      state.posts.forEach((post) => (state.dismissedPostIds[post.id] = true))
       state.hasMore = false
     },
   },
@@ -100,18 +114,17 @@ const redditSlice = createSlice({
 })
 
 export const selectPosts = createSelector(
-  (state: StateType) => state.reddit.posts,
-  (state: StateType) => state.reddit.dismissedPostIds,
   ({ reddit }: StateType) => ({
+    posts: reddit.posts,
     hasMore: reddit.hasMore,
     currentPost: reddit.currentPost,
     readPostIds: reddit.readPostIds,
+    dismissedPostIds: reddit.dismissedPostIds,
   }),
-  (posts, dismissedPostIds, restState) => ({
-    posts: posts.filter((post) => !dismissedPostIds[post.id]),
-    ...restState,
-  })
+  (state) => state
 )
+export const selectIsLoading = ({ reddit }: StateType): boolean =>
+  reddit.loading === 'loading'
 
 export const {
   setCurrentPost,
