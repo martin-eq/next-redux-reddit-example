@@ -44,7 +44,7 @@ export const fetchPosts = createAsyncThunk<
       }
 
       if (!reddit.hasMore) {
-        return rejectWithValue({ error: 'No more posts available' })
+        throw new Error('No more posts available')
       }
 
       const response = await ky.get(`${API_URL}/top.json`, { searchParams })
@@ -58,6 +58,7 @@ export const fetchPosts = createAsyncThunk<
     condition: (_, { getState }) => {
       const { reddit } = getState()
 
+      // We are already fetching data, cancel this request
       if (reddit.loading === 'loading') {
         return false
       }
@@ -90,9 +91,16 @@ const redditSlice = createSlice({
     dismissPost: (state, action: PayloadAction<string>) => {
       state.dismissedPostIds[action.payload] = true
     },
-    dismissAllPosts: (state) => {
-      state.posts.forEach((post) => (state.dismissedPostIds[post.id] = true))
-      state.hasMore = false
+    toggleAllPosts: (state) => {
+      // Display or Dismiss all posts
+      if (state.hasMore) {
+        state.posts.forEach((post) => (state.dismissedPostIds[post.id] = true))
+        state.currentPost = null
+        state.hasMore = false
+      } else {
+        state.dismissedPostIds = {}
+        state.hasMore = true
+      }
     },
   },
   extraReducers: {
@@ -129,7 +137,7 @@ export const selectIsLoading = ({ reddit }: StateType): boolean =>
 export const {
   setCurrentPost,
   dismissPost,
-  dismissAllPosts,
+  toggleAllPosts,
 } = redditSlice.actions
 
 const persistConfig = {

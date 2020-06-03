@@ -10,6 +10,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import Button from '@material-ui/core/Button'
 import Box from '@material-ui/core/Box'
 import ClearIcon from '@material-ui/icons/Clear'
+import CheckIcon from '@material-ui/icons/Check'
 import {
   makeStyles,
   useTheme,
@@ -22,7 +23,7 @@ import PostList from './postList'
 import { toggleDrawer, selectMobileOpen } from '../lib/slices/drawerSlice'
 import {
   fetchPosts,
-  dismissAllPosts,
+  toggleAllPosts,
   selectPosts,
   selectIsLoading,
 } from '../lib/slices/redditSlice'
@@ -74,13 +75,13 @@ const Sidebar: FunctionComponent = () => {
       <Box position="fixed" bottom="0" width={DRAWER_WIDTH} zIndex="modal">
         <Button
           variant="contained"
-          color="secondary"
+          color={hasMore ? 'secondary' : 'primary'}
           size="large"
-          startIcon={<ClearIcon />}
-          onClick={() => dispatch(dismissAllPosts())}
+          startIcon={hasMore ? <ClearIcon /> : <CheckIcon />}
+          onClick={() => dispatch(toggleAllPosts())}
           fullWidth
         >
-          Dismiss All
+          {hasMore ? 'Dismiss All' : 'Show me the posts again, please'}
         </Button>
       </Box>
     </>
