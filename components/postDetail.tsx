@@ -12,7 +12,9 @@ import LinkIcon from '@material-ui/icons/Link'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 
 import { selectPosts } from '../lib/slices/redditSlice'
-import { PLACEHOLDER_IMAGE } from '../lib/constants'
+import { PLACEHOLDER_IMAGE, API_URL } from '../lib/constants'
+import Post from '../lib/types/post'
+import { verifyUrl } from '../lib/utils'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -37,6 +39,16 @@ const PostDetail: FunctionComponent = () => {
   // Prevents trying to render when a post wasn't selected yet
   if (!post) return null
 
+  const renderMedia = (post: Post) => {
+    if (post.is_video) {
+      return post.secure_media.reddit_video.fallback_url
+    } else if (post.post_hint === 'image') {
+      return post.url
+    } else {
+      return verifyUrl(post.thumbnail, PLACEHOLDER_IMAGE)
+    }
+  }
+
   return (
     <main className={classes.content}>
       <div className={classes.toolbar} />
@@ -46,13 +58,7 @@ const PostDetail: FunctionComponent = () => {
           subheader={moment.unix(post.created).fromNow()}
         />
         <CardMedia
-          src={
-            post.is_video
-              ? post.secure_media.reddit_video.fallback_url
-              : post.is_reddit_media_domain
-              ? post.url
-              : PLACEHOLDER_IMAGE
-          }
+          src={renderMedia(post)}
           component={post.is_video ? 'video' : 'img'}
           title={post.title}
           controls
@@ -64,7 +70,9 @@ const PostDetail: FunctionComponent = () => {
           </Typography>
         </CardContent>
         <CardActions disableSpacing>
-          <IconButton onClick={() => window.open(post.url)}>
+          <IconButton
+            onClick={() => window.open(`${API_URL}${post.permalink}`)}
+          >
             <LinkIcon />
           </IconButton>
         </CardActions>

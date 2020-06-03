@@ -7,6 +7,8 @@ type Post = {
   thumbnail: string
   url: string
   is_video?: boolean
+  permalink: string
+  post_hint: string
   num_comments: number
   is_reddit_media_domain?: boolean
   secure_media: {
