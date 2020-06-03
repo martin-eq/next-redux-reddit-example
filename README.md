@@ -1,6 +1,7 @@
 # Redux Toolkit example
 
 This example shows the top list of Reddit posts and allows the user to see the posts details.
+
 Live example: https://next-redux-reddit-example.now.sh/
 
 ## Requirements
