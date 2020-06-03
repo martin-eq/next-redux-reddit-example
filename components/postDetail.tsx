@@ -11,7 +11,7 @@ import IconButton from '@material-ui/core/IconButton'
 import LinkIcon from '@material-ui/icons/Link'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 
-import { selectCurrentPost } from '../lib/slices/redditSlice'
+import { selectPosts } from '../lib/slices/redditSlice'
 import { PLACEHOLDER_IMAGE } from '../lib/constants'
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -32,8 +32,9 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const PostDetail: FunctionComponent = () => {
   const classes = useStyles()
-  const post = useSelector(selectCurrentPost)
+  const { currentPost: post } = useSelector(selectPosts)
 
+  // Prevents trying to render when a post wasn't selected yet
   if (!post) return null
 
   return (

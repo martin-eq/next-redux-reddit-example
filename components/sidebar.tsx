@@ -7,6 +7,9 @@ import Divider from '@material-ui/core/Divider'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import Button from '@material-ui/core/Button'
+import Box from '@material-ui/core/Box'
+import ClearIcon from '@material-ui/icons/Clear'
 import {
   makeStyles,
   useTheme,
@@ -17,7 +20,11 @@ import {
 import { DRAWER_WIDTH } from '../lib/constants'
 import PostList from './postList'
 import { toggleDrawer, selectMobileOpen } from '../lib/slices/drawerSlice'
-import { fetchPosts, selectAfter } from '../lib/slices/redditSlice'
+import {
+  fetchPosts,
+  dismissAllPosts,
+  selectPosts,
+} from '../lib/slices/redditSlice'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -41,31 +48,43 @@ const Sidebar: FunctionComponent = () => {
   const classes = useStyles()
   const theme = useTheme()
   const dispatch = useDispatch()
+  const { hasMore } = useSelector(selectPosts)
   const mobileOpen = useSelector(selectMobileOpen)
-  const after = useSelector(selectAfter)
 
   const drawer = (
-    <InfiniteScroll
-      loadMore={() => dispatch(fetchPosts({ after }))}
-      // Avoids double initial requests
-      // Reference: https://github.com/danbovey/react-infinite-scroller/issues/143#issuecomment-387029723
-      hasMore={true}
-      initialLoad={false}
-      loader={
-        <div className={classes.loader} key={0}>
-          <CircularProgress />
-        </div>
-      }
-      useWindow={false}
-    >
+    <>
       <Toolbar>
         <Typography variant="h6" noWrap>
           Reddit Posts
         </Typography>
       </Toolbar>
       <Divider />
-      <PostList />
-    </InfiniteScroll>
+      <InfiniteScroll
+        loadMore={() => dispatch(fetchPosts())}
+        hasMore={hasMore}
+        initialLoad={false}
+        loader={
+          <div className={classes.loader} key={0}>
+            <CircularProgress />
+          </div>
+        }
+        useWindow={false}
+      >
+        <PostList />
+      </InfiniteScroll>
+      <Box position="sticky" bottom="0" width="100%" zIndex="modal">
+        <Button
+          variant="contained"
+          color="secondary"
+          size="large"
+          startIcon={<ClearIcon />}
+          onClick={() => dispatch(dismissAllPosts())}
+          fullWidth
+        >
+          Dismiss All
+        </Button>
+      </Box>
+    </>
   )
 
   return (

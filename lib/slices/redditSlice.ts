@@ -13,12 +13,13 @@ import Post from '../types/post'
 
 type RedditState = {
   posts: Post[]
-  currentPost: Nullable<Post>
   loading: string
+  currentPost: Nullable<Post>
   error: Nullable<string>
-  after: string
+  after: Nullable<string>
+  hasMore: boolean
   readPostIds: Record<string, boolean>
-  clearedPostIds: Record<string, boolean>
+  dismissedPostIds: Record<string, boolean>
 }
 type StateType = {
   reddit: RedditState
@@ -27,14 +28,21 @@ type ParamsType = Record<string, string>
 
 export const fetchPosts = createAsyncThunk<
   Promise<string>,
-  Nullable<ParamsType>
->('notes/fetchPosts', async (params, thunkAPI) => {
+  void,
+  { state: StateType }
+>('notes/fetchPosts', async (_, thunkAPI) => {
   try {
+    const { reddit } = thunkAPI.getState()
     const searchParams: ParamsType = {
       limit: PAGE_LIMIT.toString(),
     }
-    if (params && typeof params.after === 'string') {
-      searchParams.after = params.after
+
+    if (reddit.after) {
+      searchParams.after = reddit.after
+    }
+
+    if (!reddit.hasMore) {
+      return thunkAPI.rejectWithValue({ error: 'No more posts available' })
     }
 
     const response = await ky.get(`${API_URL}/top.json`, { searchParams })
@@ -48,10 +56,11 @@ export const fetchPosts = createAsyncThunk<
 const initialState: RedditState = {
   posts: [],
   readPostIds: {},
-  clearedPostIds: {},
+  dismissedPostIds: {},
   currentPost: null,
   error: null,
-  after: '',
+  after: null,
+  hasMore: true,
   loading: 'idle',
 }
 
@@ -64,8 +73,12 @@ const redditSlice = createSlice({
       // Set post as read
       state.readPostIds[action.payload.id] = true
     },
-    clearPost: (state, action: PayloadAction<string>) => {
-      state.clearedPostIds[action.payload] = true
+    dismissPost: (state, action: PayloadAction<string>) => {
+      state.dismissedPostIds[action.payload] = true
+    },
+    dismissAllPosts: (state) => {
+      state.posts = []
+      state.hasMore = false
     },
   },
   extraReducers: {
@@ -78,13 +91,6 @@ const redditSlice = createSlice({
       )
       state.after = payload.data.after
       state.loading = 'loaded'
-
-      if (!state.currentPost) {
-        // Display the first post after loading the app for the first time
-        state.currentPost = state.posts[0]
-        // Set post as read
-        state.readPostIds[state.currentPost.id] = true
-      }
     },
     [fetchPosts.rejected.toString()]: (state, { payload }) => {
       state.loading = 'error'
@@ -94,23 +100,29 @@ const redditSlice = createSlice({
 })
 
 export const selectPosts = createSelector(
-  (state: StateType) => ({
-    posts: state.reddit.posts,
-    readPostIds: state.reddit.readPostIds,
-    clearedPostIds: state.reddit.clearedPostIds,
+  (state: StateType) => state.reddit.posts,
+  (state: StateType) => state.reddit.dismissedPostIds,
+  ({ reddit }: StateType) => ({
+    hasMore: reddit.hasMore,
+    currentPost: reddit.currentPost,
+    readPostIds: reddit.readPostIds,
   }),
-  (state) => state
+  (posts, dismissedPostIds, restState) => ({
+    posts: posts.filter((post) => !dismissedPostIds[post.id]),
+    ...restState,
+  })
 )
-export const selectAfter = (state: StateType): string => state.reddit.after
-export const selectCurrentPost = (state: StateType): Nullable<Post> =>
-  state.reddit.currentPost
 
-export const { setCurrentPost, clearPost } = redditSlice.actions
+export const {
+  setCurrentPost,
+  dismissPost,
+  dismissAllPosts,
+} = redditSlice.actions
 
 const persistConfig = {
   key: 'reddit',
   storage,
-  whitelist: ['readPostIds', 'clearedPostIds'],
+  whitelist: ['readPostIds', 'hasMore'],
 }
 const persistedReducer = persistReducer(persistConfig, redditSlice.reducer)
 
