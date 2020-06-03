@@ -6,11 +6,11 @@ type Post = {
   name: string
   thumbnail: string
   url: string
-  is_video: boolean
+  is_video?: boolean
   num_comments: number
-  is_reddit_media_domain: boolean
+  is_reddit_media_domain?: boolean
   secure_media: {
-    reddit_video: {
+    reddit_video?: {
       fallback_url: string
     }
   }

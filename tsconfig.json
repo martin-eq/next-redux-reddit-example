@@ -25,6 +25,6 @@
   "include": [
     "next-env.d.ts",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx", "jest.config.js", "babel.config.js", "setupEnzyme.js", "__mocks__/react-redux.js"
   ]
 }

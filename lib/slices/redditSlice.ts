@@ -1,4 +1,4 @@
-import ky from 'ky/umd'
+import axios from 'axios'
 import {
   createSlice,
   createAsyncThunk,
@@ -11,7 +11,7 @@ import storage from 'redux-persist/lib/storage'
 import { PAGE_LIMIT, API_URL } from '../constants'
 import Post from '../types/post'
 
-type RedditState = {
+export type RedditState = {
   posts: Post[]
   loading: string
   currentPost: Nullable<Post>
@@ -35,20 +35,20 @@ export const fetchPosts = createAsyncThunk<
   async (_, { getState, rejectWithValue }) => {
     try {
       const { reddit } = getState()
-      const searchParams: ParamsType = {
+      const params: ParamsType = {
         limit: PAGE_LIMIT.toString(),
       }
 
       if (reddit.after) {
-        searchParams.after = reddit.after
+        params.after = reddit.after
       }
 
       if (!reddit.hasMore) {
         throw new Error('No more posts available')
       }
 
-      const response = await ky.get(`${API_URL}/top.json`, { searchParams })
-      return response.json()
+      const response = await axios.get(`${API_URL}/top.json`, { params })
+      return response.data
     } catch (error) {
       console.error(error)
       return rejectWithValue({ error: error.message })
