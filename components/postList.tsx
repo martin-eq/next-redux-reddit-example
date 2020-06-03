@@ -49,7 +49,7 @@ const PostList: FunctionComponent = () => {
     if (Object.keys(dismissedPostIds).length === posts.length) {
       dispatch(fetchPosts())
     }
-  }, [dismissedPostIds])
+  }, [dismissedPostIds, posts])
 
   return (
     <List disablePadding>
