@@ -58,12 +58,8 @@ export const fetchPosts = createAsyncThunk<
     condition: (_, { getState }) => {
       const { reddit } = getState()
 
-      // We are already fetching data, cancel this request
-      if (reddit.loading === 'loading') {
-        return false
-      }
-
-      return true
+      // If we are already fetching data, cancel this request
+      return reddit.loading !== 'loading'
     },
   }
 )
@@ -99,6 +95,7 @@ const redditSlice = createSlice({
         state.hasMore = false
       } else {
         state.dismissedPostIds = {}
+        state.readPostIds = {}
         state.hasMore = true
       }
     },

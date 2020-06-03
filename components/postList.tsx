@@ -27,9 +27,13 @@ import { verifyUrl } from '../lib/utils'
 
 const PostList: FunctionComponent = () => {
   const dispatch = useDispatch()
-  const { posts, currentPost, readPostIds, dismissedPostIds } = useSelector(
-    selectPosts
-  )
+  const {
+    posts,
+    currentPost,
+    readPostIds,
+    dismissedPostIds,
+    hasMore,
+  } = useSelector(selectPosts)
 
   const handleSelectPost = (post) => {
     dispatch(setCurrentPost(post))
@@ -38,11 +42,11 @@ const PostList: FunctionComponent = () => {
   }
 
   useEffect(() => {
-    if (!currentPost && posts.length) {
-      // Select first post
+    // Select first post if no post is selected
+    if (!currentPost && posts.length && hasMore) {
       dispatch(setCurrentPost(posts[0]))
     }
-  }, [posts])
+  }, [posts, hasMore])
 
   useEffect(() => {
     // If the user dismissed all posts in the view, request more
