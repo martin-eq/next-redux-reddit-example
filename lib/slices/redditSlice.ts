@@ -50,7 +50,6 @@ export const fetchPosts = createAsyncThunk<
       const response = await axios.get(`${API_URL}/top.json`, { params })
       return response.data
     } catch (error) {
-      console.error(error)
       return rejectWithValue({ error: error.message })
     }
   },
