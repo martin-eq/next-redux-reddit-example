@@ -1,6 +1,7 @@
 # Redux Toolkit example
 
 This example shows the top list of Reddit posts and allows the user to see the posts details.
+For a better experience, pagination is included.
 
 Live example: https://next-redux-reddit-example.now.sh/
 
@@ -11,9 +12,9 @@ Live example: https://next-redux-reddit-example.now.sh/
 ## How to use
 
 ### Set up project
-Install project rependencies:
+Install project dependencies:
 ```bash
-npm run dev
+npm install
 ```
 
 ### Running in development environment
@@ -30,7 +31,7 @@ npm run build
 
 Then you can either run a production server locally
 ```bash
-npm run build
+npm start
 ```
 
 Or you can deploy the production assets, in this case we use Vercel's Now
