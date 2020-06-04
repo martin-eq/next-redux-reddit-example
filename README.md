@@ -1,4 +1,4 @@
-# Redux Toolkit example
+# Reddit example app with Next.js, TypeScript and Redux
 
 This example shows the top list of Reddit posts and allows the user to see the posts details.
 For a better experience, pagination is included.
